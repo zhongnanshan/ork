@@ -1,24 +1,42 @@
 /*
  * Ork: a small object-oriented OpenGL Rendering Kernel.
- * Copyright (c) 2008-2010 INRIA
+ * Website : http://ork.gforge.inria.fr/
+ * Copyright (c) 2008-2015 INRIA - LJK (CNRS - Grenoble University)
+ * All rights reserved.
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, 
+ * this list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice, 
+ * this list of conditions and the following disclaimer in the documentation 
+ * and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the copyright holder nor the names of its contributors 
+ * may be used to endorse or promote products derived from this software without 
+ * specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.
  */
-
 /*
- * Authors: Eric Bruneton, Antoine Begault, Guillaume Piolat.
+ * Ork is distributed under the BSD3 Licence. 
+ * For any assistance, feedback and remarks, you can check out the 
+ * mailing list on the project page : 
+ * http://ork.gforge.inria.fr/
+ */
+/*
+ * Main authors: Eric Bruneton, Antoine Begault, Guillaume Piolat.
  */
 
 #include "ork/ui/GlutWindow.h"
@@ -43,71 +61,14 @@
 #define GLUT_WHEEL_DOWN_BUTTON 0x0004
 #endif
 
-#ifndef CALLBACK
-#define CALLBACK
-#endif
+#include "DebugCallback.h"
+
+using namespace std;
 
 namespace ork
 {
 
-void CALLBACK debugCallback(unsigned int source, unsigned int type,
-    unsigned int id, unsigned int severity,
-    int length, const char* message, void* userParam)
-{
-    char debSource[16];
-    switch (source) {
-    case GL_DEBUG_SOURCE_API_ARB:
-        strcpy(debSource, "OPENGL");
-        break;
-    case GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB:
-        strcpy(debSource, "WINDOWS");
-        break;
-    case GL_DEBUG_SOURCE_SHADER_COMPILER_ARB:
-        strcpy(debSource, "COMPILER");
-        break;
-    case GL_DEBUG_SOURCE_THIRD_PARTY_ARB:
-        strcpy(debSource, "LIBRARY");
-        break;
-    case GL_DEBUG_SOURCE_APPLICATION_ARB:
-        strcpy(debSource, "APPLICATION");
-        break;
-    //case GL_DEBUG_SOURCE_OTHER_ARB:
-    default:
-        strcpy(debSource, "UNKNOWN");
-    }
 
-    char debType[20];
-    switch (type) {
-    case GL_DEBUG_TYPE_ERROR_ARB:
-        strcpy(debType, "Error");
-        break;
-    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB:
-        strcpy(debType, "Deprecated behavior");
-        break;
-    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB:
-        strcpy(debType, "Undefined behavior");
-        break;
-    case GL_DEBUG_TYPE_PORTABILITY_ARB:
-        strcpy(debType, "Portability");
-        break;
-    case GL_DEBUG_TYPE_PERFORMANCE_ARB:
-        strcpy(debType, "Performance");
-        break;
-    //case GL_DEBUG_TYPE_OTHER_ARB:
-    default:
-        strcpy(debType, "Other");
-    }
-
-    if (severity == GL_DEBUG_SEVERITY_HIGH_ARB && Logger::ERROR_LOGGER != NULL) {
-        Logger::ERROR_LOGGER->logf(debSource, "%s: %s", debType, message);
-    }
-    if (severity == GL_DEBUG_SEVERITY_MEDIUM_ARB && Logger::WARNING_LOGGER != NULL) {
-        Logger::WARNING_LOGGER->logf(debSource, "%s: %s", debType, message);
-    }
-    if (severity == GL_DEBUG_SEVERITY_LOW_ARB && Logger::INFO_LOGGER != NULL) {
-        Logger::INFO_LOGGER->logf(debSource, "%s: %s", debType, message);
-    }
-}
 
 map<int, GlutWindow*> GlutWindow::INSTANCES;
 
@@ -115,7 +76,8 @@ GlutWindow::GlutWindow(const Parameters &params) : Window(params)
 {
     int argc = 1;
     char *argv[1] = { (char*) "dummy" };
-    if (INSTANCES.size() == 0) {
+	int x = INSTANCES.size();
+    if (x == 0) {
         glutInit(&argc, argv);
     }
     glutInitDisplayMode(GLUT_DOUBLE |
@@ -123,10 +85,12 @@ GlutWindow::GlutWindow(const Parameters &params) : Window(params)
         (params.depth() ? GLUT_DEPTH : 0) |
         (params.stencil() ? GLUT_STENCIL : 0) |
         (params.multiSample() ? GLUT_MULTISAMPLE : 0));
+	
+    glGetError();
 
 #ifdef USEFREEGLUT
     //Init OpenGL context
-    glutInitContextVersion(params.major(), params.minor());
+    glutInitContextVersion(params.version().x, params.version().y);
     glutInitContextProfile(GLUT_CORE_PROFILE);
     glutInitContextFlags(GLUT_FORWARD_COMPATIBLE | (params.debug() ? GLUT_DEBUG : 0));
 #endif
@@ -145,6 +109,9 @@ GlutWindow::GlutWindow(const Parameters &params) : Window(params)
     if (false) {
         glutCreateMenu(NULL);//do nothing, only used to avoid a warning
     }
+     
+    glGetError();
+
 
     INSTANCES[windowId] = this;
     glutDisplayFunc(redisplayFunc);
@@ -165,24 +132,40 @@ GlutWindow::GlutWindow(const Parameters &params) : Window(params)
 
     assert(glGetError() == 0);
     glewExperimental = GL_TRUE;
+    glGetError();
     glewInit();
     glGetError();
 
 #ifdef USEFREEGLUT
     if (params.debug()) {
         assert(glDebugMessageCallbackARB != NULL);
-        glDebugMessageCallbackARB(debugCallback, NULL);
+        glDebugMessageCallbackARB((GLDEBUGPROCARB)debugCallback, NULL);
     }
 #endif
+    // Lars F addtion 16.05.2016
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
 }
 
 GlutWindow::~GlutWindow()
 {
+    // Lars F addition 16.05.2016
+    glDeleteVertexArrays(1, &vao);
+
 #ifdef USEFREEGLUT
+    // Commented out due to error message from glut
+    // (complains glutInit has notbeen called...
     glutDestroyWindow(windowId);
     glutLeaveMainLoop();
 #endif
     INSTANCES.erase(windowId);
+}
+
+void GlutWindow::shutDown()
+{
+	//glutDestroyWindow(windowId);
+	glutLeaveMainLoop();
+
 }
 
 int GlutWindow::getWidth() const

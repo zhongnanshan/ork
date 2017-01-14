@@ -38,77 +38,24 @@
 /*
  * Main authors: Eric Bruneton, Antoine Begault, Guillaume Piolat.
  */
+#ifndef DEBUGCALLBACK_H_INCLUDED
+#define DEBUGCALLBACK_H_INCLUDED
 
-#ifndef _ORK_ABSTRACT_TASK_H_
-#define _ORK_ABSTRACT_TASK_H_
-
-#include "ork/taskgraph/TaskFactory.h"
-#include "ork/scenegraph/SceneNode.h"
+#ifndef CALLBACK
+#ifdef _STDCALL_SUPPORTED
+#define CALLBACK __stdcall
+#else
+#define CALLBACK 
+#endif
+#endif
 
 namespace ork
 {
 
-/**
- * An abstract task for a Method. A method "task" is in fact a TaskFactory that
- * creates Task. Indeed a new Task is created at each method invocation.
- *
- * @ingroup scenegraph
- */
-class ORK_API AbstractTask : public TaskFactory
-{
-public:
-    /**
-     * Creates a new AbstractTask.
-     *
-     * @param type the task type.
-     */
-    AbstractTask(const char* type);
-
-    /**
-     * Deletes this AbstractTask.
-     */
-    virtual ~AbstractTask();
-
-protected:
-    /**
-     * A qualified name of the form <i>target</i>.<i>name</i>.
-     */
-    struct ORK_API QualifiedName {
-
-        /**
-         * The first part of this qualified name. The first part is optional.
-         * It can be "this", "$v" or any scene node flag.
-         */
-        std::string target;
-
-        /**
-         * The second part of this qualified name.
-         */
-        std::string name;
-
-        /**
-         * Creates an empty qualified name.
-         */
-        QualifiedName();
-
-        /**
-         * Creates a qualified name.
-         *
-         * @param n a qualified name of the form <i>target</i>.<i>name</i> or
-         *      <i>name</i>.
-         */
-        QualifiedName(const std::string &n);
-
-        /**
-         * Returns the SceneNode designated by this qualified name.
-         *
-         * @param context the scene graph into which the target SceneNode must
-         *      be looked for.
-         */
-        ptr<SceneNode> getTarget(ptr<SceneNode> context);
-    };
-};
+void CALLBACK debugCallback(unsigned int source, unsigned int type,
+    unsigned int id, unsigned int severity,
+    int length, const char* message, const void* userParam);
 
 }
 
-#endif
+#endif // DEBUGCALLBACK_H_INCLUDED

@@ -39,101 +39,84 @@
  * Main authors: Eric Bruneton, Antoine Begault, Guillaume Piolat.
  */
 
-#include "ork/render/TextureBuffer.h"
+#include "DebugCallback.h"
 
-#include <exception>
+#include "ork/core/Logger.h"
 
 #include <GL/glew.h>
 
-#include "ork/render/FrameBuffer.h"
+#include <assert.h>
+
+#include <string.h>
+
+//#ifndef CALLBACK
+//#define CALLBACK
+//#endif
 
 using namespace std;
 
 namespace ork
 {
 
-GLenum getTextureInternalFormat(TextureInternalFormat f);
-
-TextureBuffer::TextureBuffer(TextureInternalFormat tf, ptr<GPUBuffer> pixels) : Texture("TextureBuffer", GL_TEXTURE_BUFFER)
+void CALLBACK debugCallback(unsigned int source, unsigned int type,
+    unsigned int id, unsigned int severity,
+    int length, const char* message, const void* userParam)
 {
-    int formatSize;
-    switch (tf) {
-    case R8:
-    case R8I:
-    case R8UI:
-        formatSize = 1;
+    char debSource[16];
+    switch (source) {
+    case GL_DEBUG_SOURCE_API_ARB:
+        strcpy(debSource, "OPENGL");
         break;
-    case R16:
-    case R16I:
-    case R16UI:
-    case R16F:
-    case RG8:
-    case RG8I:
-    case RG8UI:
-        formatSize = 2;
+    case GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB:
+        strcpy(debSource, "WINDOWS");
         break;
-    case R32I:
-    case R32UI:
-    case R32F:
-    case RG16:
-    case RG16I:
-    case RG16UI:
-    case RG16F:
-    case RGBA8:
-    case RGBA8I:
-    case RGBA8UI:
-        formatSize = 4;
+    case GL_DEBUG_SOURCE_SHADER_COMPILER_ARB:
+        strcpy(debSource, "COMPILER");
         break;
-    case RG32I:
-    case RG32UI:
-    case RG32F:
-    case RGBA16:
-    case RGBA16I:
-    case RGBA16UI:
-    case RGBA16F:
-        formatSize = 8;
+    case GL_DEBUG_SOURCE_THIRD_PARTY_ARB:
+        strcpy(debSource, "LIBRARY");
         break;
-    case RGBA32I:
-    case RGBA32UI:
-    case RGBA32F:
-        formatSize = 16;
+    case GL_DEBUG_SOURCE_APPLICATION_ARB:
+        strcpy(debSource, "APPLICATION");
         break;
+    //case GL_DEBUG_SOURCE_OTHER_ARB:
     default:
-        assert(false); // other formats not allowed for texture buffers
-        throw exception();
+        strcpy(debSource, "UNKNOWN");
     }
 
-    Parameters params;
-    params.wrapS(CLAMP_TO_EDGE);
-    params.wrapT(CLAMP_TO_EDGE);
-    params.wrapR(CLAMP_TO_EDGE);
-    params.min(NEAREST);
-    params.mag(NEAREST);
-    params.maxLevel(0);
+    char debType[20];
+    switch (type) {
+    case GL_DEBUG_TYPE_ERROR_ARB:
+        strcpy(debType, "Error");
+        break;
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB:
+        strcpy(debType, "Deprecated behavior");
+        break;
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB:
+        strcpy(debType, "Undefined behavior");
+        break;
+    case GL_DEBUG_TYPE_PORTABILITY_ARB:
+        strcpy(debType, "Portability");
+        break;
+    case GL_DEBUG_TYPE_PERFORMANCE_ARB:
+        strcpy(debType, "Performance");
+        break;
+    //case GL_DEBUG_TYPE_OTHER_ARB:
+    default:
+        strcpy(debType, "Other");
+    }
 
-    Texture::init(tf, params);
-    this->w = pixels->getSize() / formatSize;
-    this->b = pixels;
-
-    glTexBuffer(textureTarget, getTextureInternalFormat(internalFormat), pixels->getId());
-
-    if (FrameBuffer::getError() != 0) {
-        throw exception();
+    if (severity == GL_DEBUG_SEVERITY_HIGH_ARB && Logger::ERROR_LOGGER != NULL) {
+        Logger::ERROR_LOGGER->logf(debSource, "%s: %s", debType, message);
+    }
+    if (severity == GL_DEBUG_SEVERITY_MEDIUM_ARB && Logger::WARNING_LOGGER != NULL) {
+        Logger::WARNING_LOGGER->logf(debSource, "%s: %s", debType, message);
+    }
+    if (severity == GL_DEBUG_SEVERITY_LOW_ARB && Logger::INFO_LOGGER != NULL) {
+        Logger::INFO_LOGGER->logf(debSource, "%s: %s", debType, message);
     }
 }
 
-TextureBuffer::~TextureBuffer()
-{
-}
-
-int TextureBuffer::getWidth()
-{
-    return w;
-}
-
-ptr<GPUBuffer> TextureBuffer::getBuffer()
-{
-    return b;
-}
 
 }
+

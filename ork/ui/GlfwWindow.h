@@ -39,12 +39,13 @@
  * Main authors: Eric Bruneton, Antoine Begault, Guillaume Piolat.
  */
 
-#ifndef _ORK_GLUT_WINDOW_H_
-#define _ORK_GLUT_WINDOW_H_
+#ifndef _ORK_GLFW_WINDOW_H_
+#define _ORK_GLLFW_WINDOW_H_
 
 #include <map>
 
 #include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 #include "ork/math/vec2.h"
 #include "ork/core/Timer.h"
@@ -54,10 +55,10 @@ namespace ork
 {
 
 /**
- * A Window implemented using GLUT.
- * @ingroup ui
+ * A Window implemented using glfw.
+ * (c) 2016 Lars Flæten
  */
-class ORK_API GlutWindow : public Window
+class ORK_API GlfwWindow : public Window
 {
 public:
     /**
@@ -66,12 +67,12 @@ public:
      *
      * @param params the parameters of the window.
      */
-    GlutWindow(const Window::Parameters &params);
+    GlfwWindow(const Window::Parameters &params);
 
     /**
      * Deletes this window.
      */
-    virtual ~GlutWindow();
+    virtual ~GlfwWindow();
 
     virtual int getWidth() const;
 
@@ -85,19 +86,34 @@ public:
 
     virtual void idle(bool damaged);
 
-	// new method to try to exit more cleanly due to memoery leaks
-    virtual void shutDown();
+
+    /**
+     * Tells the windowing system wether to wait for a vertical
+     * sync or not beofre swapping buffers.
+     */
+    void    waitForVSync(bool wait);
+
+    /**
+     * Returns the current mouse cursor position
+     */
+    void    getMousePosition(int* x, int* y);
 
 private:
     /**
      * The Window instances. Maps window id to Window instances.
      */
-    static std::map<int, GlutWindow*> INSTANCES;
+    //static std::map<int, GlfwWindow*> INSTANCES;
 
     /**
      * The id of this window.
      */
     int windowId;
+
+    /**
+     * The glfw window handle
+     * (A bit sluggish to use void*??)
+     */
+    void* glfwWindowHandle;
 
     /**
      * The current size of this window.
@@ -131,59 +147,63 @@ private:
     GLuint vao;
 
     /**
-     * GLUT callback that calls #redisplay on the active Window.
+     * Glfw callback that calls #redisplay on the active Window.
      */
     static void redisplayFunc();
 
     /**
-     * GLUT callback that calls #reshape on the active Window.
+     * Glfw callback that calls #reshape on the active Window.
      */
-    static void reshapeFunc(int x, int y);
+    static void reshapeFunc(GLFWwindow*, int w, int h);
 
     /**
-     * GLUT callback that calls #idle on the active Window.
+     * Glfw callback that calls #idle on the active Window.
      */
-    static void idleFunc();
+    //static void idleFunc();
 
     /**
-     * GLUT callback that calls #mouseClick on the active Window.
+     * Glfw callback that calls #mouseClick on the active Window.
      */
-    static void mouseClickFunc(int button, int state, int x, int y);
+    static void mouseClickFunc(GLFWwindow* window, int button, int action, int mods);
 
     /**
-     * GLUT callback that calls #mouseMotion on the active Window.
+     *
      */
-    static void mouseMotionFunc(int x, int y);
+    static void scrollFunc(GLFWwindow* window, double xScroll, double yScroll);
+    
+    /**
+     * Glfw callback that calls #mouseMotion on the active Window.
+     */
+    static void mouseMotionFunc(GLFWwindow* window, double x, double y);
 
     /**
-     * GLUT callback that calls #mousePassiveMotion on the active Window.
+     * Glfw callback that calls #mouseEnterLeave on the active Window.
      */
-    static void mousePassiveMotionFunc(int x, int y);
+    static void mouseEnterLeaveFunc(GLFWwindow* window, int entered);
 
     /**
-     * GLUT callback that calls #keyTyped on the active Window.
+     * Key callback
      */
-    static void keyboardFunc(unsigned char c, int x, int y);
+    static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
     /**
-     * GLUT callback that calls #keyReleased on the active Window.
+     * Glfw callback for focus events.
      */
-    static void keyboardUpFunc(unsigned char c, int x, int y);
+    static void focusFunc(GLFWwindow* window, int focus);
 
     /**
-     * GLUT callback that calls #specialKey on the active Window.
+     * Glfw error callback.
      */
-    static void specialKeyFunc(int c, int x, int y);
+    static void errorCallback(int error, const char* message);
+
 
     /**
-     * GLUT callback that calls #specialKeyReleased on the active Window.
+     * Utility function to check wether shift, ctrl or alt
+     * has been pressed
      */
-    static void specialKeyUpFunc(int c, int x, int y);
+    static EventHandler::modifier getModifiers(GLFWwindow* wd);
 
-    /**
-     * GLUT callback for focus events.
-     */
-    static void focusFunc(int focus);
+
 };
 
 }

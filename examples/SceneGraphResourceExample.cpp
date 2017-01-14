@@ -23,6 +23,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "ork/core/FileLogger.h"
 #include "ork/resource/XMLResourceLoader.h"
@@ -34,6 +35,7 @@
 
 #include "examples/Main.h"
 
+using namespace std;
 using namespace ork;
 
 class SceneGraphResourceExample : public GlutWindow

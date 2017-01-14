@@ -22,6 +22,7 @@
  */
 
 #include <fstream>
+#include <string>
 
 #include "stbi/stb_image.h"
 
@@ -31,6 +32,7 @@
 
 #include "examples/Main.h"
 
+using namespace std;
 using namespace ork;
 
 struct P3_N3_UV_C {
