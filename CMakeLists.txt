@@ -2,25 +2,79 @@ PROJECT( Ork )
 
 CMAKE_MINIMUM_REQUIRED( VERSION 2.6 )
 
-# 设置外部依赖库
+SET( MY_COMPILE_OPTIONS "" )
 
-FIND_PATH( PThreadInclude pthread.h)
-FIND_LIBRARY( PThreadLib pthreadVCE2.lib)
+# 设置外部依赖库
+SET( PTHREAD_ROOT "${PROJECT_BINARY_DIR}/../ork3rd/pthreads-w32-2-8-0-release/Pre-built.2" )
+IF( EXISTS ${PTHREAD_ROOT} )
+	SET( PThreadInclude ${PTHREAD_ROOT}/include )
+	SET( PThreadLib ${PTHREAD_ROOT}/lib/pthreadVCE2.lib )
+	MESSAGE( "Pthread Finded!" )
+ELSE()
+	FIND_PATH( PThreadInclude pthread.h)
+	FIND_LIBRARY( PThreadLib pthreadVCE2.lib)
+	MESSAGE( "Pthread need configure!" )
+ENDIF()
 
 MESSAGE( ${PThreadInclude} )
 MESSAGE( ${PThreadLib} )
 
-FIND_PATH( GLUTInclude GL/glut.h)
-FIND_LIBRARY( GLUTLib glut32.lib)
+OPTION( B_USE_FREEGLUT "weather use freeglut or not?" ON )
+IF( B_USE_FREEGLUT )
+	SET( GLUT_ROOT "${PROJECT_BINARY_DIR}/../ork3rd/freeglut" )
+	IF( EXISTS ${GLUT_ROOT} )
+		SET( GLUTInclude ${GLUT_ROOT}/include )
+		SET( GLUTLib ${GLUT_ROOT}/lib/freeglut.lib )
+		MESSAGE( "GLUT Finded!" )
+	ELSE()
+		FIND_PATH( GLUTInclude GL/glut.h)
+		FIND_LIBRARY( GLUTLib freeglut.lib)
+		MESSAGE( "GLUT need configure!" )
+	ENDIF()
+	SET( MY_COMPILE_OPTIONS "-DUSEFREEGLUT" )
+ELSE()
+	SET( GLUT_ROOT "${PROJECT_BINARY_DIR}/../ork3rd/glut-3.7.6-bin" )
+	IF( EXISTS ${GLUT_ROOT} )
+		SET( GLUTInclude ${GLUT_ROOT} )
+		SET( GLUTLib ${GLUT_ROOT}/glut32.lib )
+		MESSAGE( "GLUT Finded!" )
+	ELSE()
+		FIND_PATH( GLUTInclude GL/glut.h)
+		FIND_LIBRARY( GLUTLib glut32.lib)
+		MESSAGE( "GLUT need configure!" )
+	ENDIF()
+ENDIF()
 
 MESSAGE( ${GLUTInclude} )
 MESSAGE( ${GLUTLib} )
 
-FIND_PATH( GLEWInclude GL/glew.h)
-FIND_LIBRARY( GLEWLib glew32.lib)
+SET( GLEW_ROOT "${PROJECT_BINARY_DIR}/../ork3rd/glew-1.5.6" )
+IF( EXISTS ${GLEW_ROOT} )
+	SET( GLEWInclude ${GLEW_ROOT}/include )
+	SET( GLEWLib ${GLEW_ROOT}/lib/glew32.lib )
+	MESSAGE( "GLEW Finded!" )
+ELSE()
+	FIND_PATH( GLEWInclude GL/glew.h)
+	FIND_LIBRARY( GLEWLib glew32.lib)
+	MESSAGE( "GLEW need configure!" )
+ENDIF()
 
 MESSAGE( ${GLEWInclude} )
 MESSAGE( ${GLEWLib} )
+
+SET( GLFW_ROOT "${PROJECT_BINARY_DIR}/../ork3rd/glfw-3.2.1.bin.WIN32" )
+IF( EXISTS ${GLFW_ROOT} )
+	SET( GLFWInclude ${GLFW_ROOT}/include )
+	SET( GLFWLib ${GLFW_ROOT}/lib-vc2015/glfw3dll.lib )
+	MESSAGE( "GLFW Finded!" )
+ELSE()
+	FIND_PATH( GLFWInclude GLFW/glfw3.h)
+	FIND_LIBRARY( GLFWLib glfw3dll.lib)
+	MESSAGE( "GLFW need configure!" )
+ENDIF()
+	
+MESSAGE( ${GLFWInclude} )
+MESSAGE( ${GLFWLib} )
 
 # 定义源代码集
 
@@ -34,6 +88,7 @@ ADD_DEFINITIONS(
 	-D_CRT_SECURE_NO_WARNINGS	
 	-D_M_IX86 
 	-DHAVE_STRUCT_TIMESPEC
+	${MY_COMPILE_OPTIONS}
 #	-DUSE_SHARED_PTR
 	)
 
@@ -42,6 +97,7 @@ INCLUDE_DIRECTORIES(
 	${PThreadInclude} 
 	${GLUTInclude} 
 	${GLEWInclude}
+#	${GLFWInclude}
 	libraries
 	libraries/tibyxml
 	libraries/stbi
@@ -198,6 +254,8 @@ SET( ORK_SRCS
 		ork/ui/GlutWindow.h
 		ork/ui/Window.cpp
 		ork/ui/Window.h
+#		ork/ui/DebugCallback.cpp
+#		ork/ui/DebugCallback.h
 		ork/util/Font.cpp
 		ork/util/Font.h
 	)
