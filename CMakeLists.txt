@@ -16,6 +16,8 @@ ELSE()
 	MESSAGE( "Pthread need configure!" )
 ENDIF()
 
+SET( PThreadDll ${PTHREAD_ROOT}/lib/pthreadVCE2.dll )
+
 MESSAGE( ${PThreadInclude} )
 MESSAGE( ${PThreadLib} )
 
@@ -45,6 +47,12 @@ ELSE()
 	ENDIF()
 ENDIF()
 
+IF( B_USE_FREEGLUT )
+	SET( GLUTDll ${GLUT_ROOT}/bin/freeglut.dll )
+ELSE()
+	SET( GLUTDll ${GLUT_ROOT}/glut32.dll )
+ENDIF()
+
 MESSAGE( ${GLUTInclude} )
 MESSAGE( ${GLUTLib} )
 
@@ -59,6 +67,8 @@ ELSE()
 	MESSAGE( "GLEW need configure!" )
 ENDIF()
 
+SET( GLEWDll ${GLEW_ROOT}/bin/glew32.dll )
+
 MESSAGE( ${GLEWInclude} )
 MESSAGE( ${GLEWLib} )
 
@@ -72,7 +82,9 @@ ELSE()
 	FIND_LIBRARY( GLFWLib glfw3dll.lib)
 	MESSAGE( "GLFW need configure!" )
 ENDIF()
-	
+
+SET( GLFWDll ${GLFW_ROOT}/lib-vc2015/glfw3.dll )
+
 MESSAGE( ${GLFWInclude} )
 MESSAGE( ${GLFWLib} )
 
@@ -344,3 +356,12 @@ ADD_SUBDIRECTORY( myexams )
 #	TARGET_COMPILE_OPTIONS( TestsAll PRIVATE "-DORK_API=" )
 #	TARGET_COMPILE_OPTIONS( TestsAll PRIVATE /wd"4002" /wd"4996" /wd"4244" /wd"4251" /wd"4800" )
 #ENDIF( MSVC )
+
+INSTALL( FILES 
+	${PThreadDll} 
+	${GLFWDll} 
+	${GLEWDll}
+	${GLUTDll}
+	DESTINATION 
+	${PROJECT_BINARY_DIR}/bin 
+	)
