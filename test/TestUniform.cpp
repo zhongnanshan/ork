@@ -330,10 +330,10 @@ TEST(testArray1b)
         uniform bool u[4];\n\
         layout(location=0) out vec4 color;\n\
         void main() { color = vec4(float(u[0]), float(u[1]), float(u[2]), float(u[3])); }\n"));
-    p->getUniform1b("u[0]")->set(true);
-    p->getUniform1b("u[1]")->set(false);
-    p->getUniform1b("u[2]")->set(true);
-    p->getUniform1b("u[3]")->set(true);
+    p->getUniform1b("u[0][0]")->set(true);
+    p->getUniform1b("u[0][1]")->set(false);
+    p->getUniform1b("u[0][2]")->set(true);
+    p->getUniform1b("u[0][3]")->set(true);
     GLfloat pixels[4];
     fb->drawQuad(p);
     fb->readPixels(0, 0, 1, 1, RGBA, FLOAT, Buffer::Parameters(), CPUBuffer(&pixels));
@@ -347,10 +347,10 @@ TEST(testArray1f)
         uniform float u[4];\n\
         layout(location=0) out vec4 color;\n\
         void main() { color = vec4(u[0], u[1], u[2], u[3]); }\n"));
-    p->getUniform1f("u[0]")->set(1.0f);
-    p->getUniform1f("u[1]")->set(2.0f);
-    p->getUniform1f("u[2]")->set(3.0f);
-    p->getUniform1f("u[3]")->set(4.0f);
+    p->getUniform1f("u[0][0]")->set(1.0f);
+    p->getUniform1f("u[0][1]")->set(2.0f);
+    p->getUniform1f("u[0][2]")->set(3.0f);
+    p->getUniform1f("u[0][3]")->set(4.0f);
     GLfloat pixels[4];
     fb->drawQuad(p);
     fb->readPixels(0, 0, 1, 1, RGBA, FLOAT, Buffer::Parameters(), CPUBuffer(&pixels));
@@ -364,10 +364,10 @@ TEST(testArray1i)
         uniform int u[4];\n\
         layout(location=0) out vec4 color;\n\
         void main() { color = vec4(u[0], u[1], u[2], u[3]); }\n"));
-    p->getUniform1i("u[0]")->set(1);
-    p->getUniform1i("u[1]")->set(2);
-    p->getUniform1i("u[2]")->set(3);
-    p->getUniform1i("u[3]")->set(4);
+    p->getUniform1i("u[0][0]")->set(1);
+    p->getUniform1i("u[0][1]")->set(2);
+    p->getUniform1i("u[0][2]")->set(3);
+    p->getUniform1i("u[0][3]")->set(4);
     GLfloat pixels[4];
     fb->drawQuad(p);
     fb->readPixels(0, 0, 1, 1, RGBA, FLOAT, Buffer::Parameters(), CPUBuffer(&pixels));

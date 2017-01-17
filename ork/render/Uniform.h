@@ -159,7 +159,7 @@ protected:
  * @ingroup render
  */
 template<UniformType U, class T, class R, const char *V, const char *W>
-class ORK_API Uniform1 : public Uniform
+class ORK_TEMPLATE_API Uniform1 : public Uniform
 {
 public:
     /**
@@ -287,7 +287,7 @@ typedef Uniform1<VEC1B, bool, GLuint, uniform1b, value1b> Uniform1b;
  * @ingroup render
  */
 template<UniformType U, class T, class R, const char *V, const char *W>
-class ORK_API Uniform2 : public Uniform
+class ORK_TEMPLATE_API Uniform2 : public Uniform
 {
 public:
     /**
@@ -416,7 +416,7 @@ typedef Uniform2<VEC2B, bool, GLuint, uniform2b, value2b> Uniform2b;
  * @ingroup render
  */
 template<UniformType U, class T, class R, const char *V, const char *W>
-class ORK_API Uniform3 : public Uniform
+class ORK_TEMPLATE_API Uniform3 : public Uniform
 {
 public:
     /**
@@ -546,7 +546,7 @@ typedef Uniform3<VEC3B, bool, GLuint, uniform3b, value3b> Uniform3b;
  * @ingroup render
  */
 template<UniformType U, class T, class R, const char *V, const char *W>
-class ORK_API Uniform4 : public Uniform
+class ORK_TEMPLATE_API Uniform4 : public Uniform
 {
 public:
     /**
@@ -677,7 +677,7 @@ typedef Uniform4<VEC4B, bool, GLuint, uniform4b, value4b> Uniform4b;
  * @ingroup render
  */
 template<UniformType U, class T, int C, int R, const char *V, const char *W>
-class ORK_API UniformMatrix : public Uniform
+class ORK_TEMPLATE_API UniformMatrix : public Uniform
 {
 public:
     /**
