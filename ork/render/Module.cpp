@@ -371,7 +371,7 @@ public:
     {
         e = e == NULL ? desc->descriptor : e;
         try {
-            checkParameters(desc, e, "name,version, source,vertex,tessControl,tessEvaluation,geometry,fragment,options,");
+            checkParameters(desc, e, "name,version, source,vertex,tessControl,tessEvaluation,geometry,fragment,options,feedback,varyings,");
 
             int version;
             getIntParameter(desc, e, "version", &version);
