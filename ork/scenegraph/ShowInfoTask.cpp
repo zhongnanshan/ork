@@ -34,7 +34,7 @@ void initInfoTask(ptr<ResourceManager> manager, const string &name, ptr<Resource
     ptr<Font> &f, ptr<Program> &p, int &c, float &size, vec3i &pos)
 {
     e = e == NULL ? desc->descriptor : e;
-    Resource::checkParameters(desc, e, "x,y,maxLines,font,fontSize,fontColor,fontProgram,");
+    Resource::checkParameters(desc, e, "x,y,maxLines,font,fontSize,fontColor,fontProgram,name,");
     int x = 4;
     int y = -4;
     int maxLines = 8;
