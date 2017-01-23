@@ -54,6 +54,13 @@ public:
 		idle(false);
 	}
 
+	bool keyTyped(unsigned char c, modifier m, int x, int y)
+	{
+		if (c == 27) {
+			::exit(0);
+		}
+		return true;
+	}
 };
 
 int main(int argc, char* argv[])
