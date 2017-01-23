@@ -86,9 +86,9 @@ public:
     {
         cube = new Mesh<P3_N3_UV_C, unsigned int>(TRIANGLES, GPU_STATIC);
         cube->addAttributeType(0, 3, A32F, false);
-        cube->addAttributeType(1, 3, A32F, false);
+        cube->addAttributeType(1, 3, A32F, true);
         cube->addAttributeType(2, 2, A32F, false);
-        cube->addAttributeType(3, 4, A8UI, true);
+        cube->addAttributeType(3, 4, A8UI, false);
         cube->addVertex(P3_N3_UV_C(-1, -1, +1, 0, 0, +1, 0, 0, 255, 0, 0, 0));
         cube->addVertex(P3_N3_UV_C(+1, -1, +1, 0, 0, +1, 1, 0, 255, 0, 0, 0));
         cube->addVertex(P3_N3_UV_C(+1, +1, +1, 0, 0, +1, 1, 1, 255, 0, 0, 0));
