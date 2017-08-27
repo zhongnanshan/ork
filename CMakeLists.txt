@@ -344,7 +344,7 @@ INSTALL( TARGETS
 	)
 
 INSTALL( FILES 
-	${PThreadDll} ${GLFWDll} ${GLEWDll} ${GLUTDll}
+	${PThreadDll} ${GLFWDll} ${GLEWDll} ${GLUTDll} examples/ExamsRun.bat
 	DESTINATION ${PROJECT_BINARY_DIR}/bin
 	)
 
